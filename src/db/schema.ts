@@ -7,7 +7,6 @@ import {
   time,
   timestamp,
   uuid,
-
 } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {

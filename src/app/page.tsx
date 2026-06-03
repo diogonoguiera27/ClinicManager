@@ -1,11 +1,12 @@
+import { Button } from "@/components/ui/button";
+
 const Home = () => {
   return (
-    <div>
-      <h1 className="text-red-600">
-        Home 
-      </h1>
+    <div className="dark">
+      
+      <Button>aaa</Button>
     </div>
-    );
-}
- 
+  );
+};
+
 export default Home;
