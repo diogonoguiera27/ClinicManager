@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const registerSchema = z.object({
   name: z.string().trim().min(1, { message: "Nome e obrigatorio" }).max(50),
@@ -60,6 +61,13 @@ const SignUpForm = () => {
         onSuccess() {
           router.push("/dashboard");
         },
+        onError: (ctx) => {
+          if (ctx.error.code === "USER_ALREADY_EXISTS") {
+            toast.error("Email ja Cadastrado");
+            return;
+          }
+          toast.error("Erro ao Criar Conta");
+        }
       },
     );
   }
