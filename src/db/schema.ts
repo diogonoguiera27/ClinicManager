@@ -10,10 +10,6 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-
-
-
-
 export const usersTable = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -59,7 +55,7 @@ export const accountsTable = pgTable("accounts", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const verificationTable = pgTable("verifications", {
+export const verificationsTable = pgTable("verifications", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
@@ -67,7 +63,6 @@ export const verificationTable = pgTable("verifications", {
   createdAt: timestamp("created_at"),
   updatedAt: timestamp("updated_at"),
 });
-
 
 export const clinicsTable = pgTable("clinics", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -91,16 +86,19 @@ export const usersToClinicsTable = pgTable("users_to_clinics", {
     .$onUpdate(() => new Date()),
 });
 
-export const usersToClinicsTableRelations = relations(usersToClinicsTable, ({ one }) => ({
-  user: one(usersTable, {
-    fields: [usersToClinicsTable.userId],
-    references: [usersTable.id],
+export const usersToClinicsTableRelations = relations(
+  usersToClinicsTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [usersToClinicsTable.userId],
+      references: [usersTable.id],
+    }),
+    clinic: one(clinicsTable, {
+      fields: [usersToClinicsTable.clinicId],
+      references: [clinicsTable.id],
+    }),
   }),
-  clinic: one(clinicsTable, {
-    fields: [usersToClinicsTable.clinicId],
-    references: [clinicsTable.id],
-  }),
-}));
+);
 
 export const clinicsTableRelations = relations(clinicsTable, ({ many }) => ({
   doctors: many(doctorsTable),
@@ -128,13 +126,16 @@ export const doctorsTable = pgTable("doctors", {
     .$onUpdate(() => new Date()),
 });
 
-export const doctorsTableRelations = relations(doctorsTable, ({ many, one }) => ({
-  clinic: one(clinicsTable, {
-    fields: [doctorsTable.clinicId],
-    references: [clinicsTable.id],
+export const doctorsTableRelations = relations(
+  doctorsTable,
+  ({ many, one }) => ({
+    clinic: one(clinicsTable, {
+      fields: [doctorsTable.clinicId],
+      references: [clinicsTable.id],
+    }),
+    appointments: many(appointmentsTable),
   }),
-  appointments: many(appointmentsTable),
-}));
+);
 
 export const patientSexEnum = pgEnum("patient_sex", ["male", "female"]);
 
@@ -153,13 +154,16 @@ export const patientsTable = pgTable("patients", {
     .$onUpdate(() => new Date()),
 });
 
-export const patientsTableRelations = relations(patientsTable, ({ one , many}) => ({
-  clinic: one(clinicsTable, {
-    fields: [patientsTable.clinicId],
-    references: [clinicsTable.id],
+export const patientsTableRelations = relations(
+  patientsTable,
+  ({ one, many }) => ({
+    clinic: one(clinicsTable, {
+      fields: [patientsTable.clinicId],
+      references: [clinicsTable.id],
+    }),
+    appointments: many(appointmentsTable),
   }),
-  appointments: many(appointmentsTable),
-}));
+);
 
 export const appointmentsTable = pgTable("appointments", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -179,17 +183,20 @@ export const appointmentsTable = pgTable("appointments", {
     .$onUpdate(() => new Date()),
 });
 
-export const appointmentsTableRelations = relations(appointmentsTable, ({ one }) => ({
-  clinic: one(clinicsTable, {
-    fields: [appointmentsTable.clinicId],
-    references: [clinicsTable.id],
+export const appointmentsTableRelations = relations(
+  appointmentsTable,
+  ({ one }) => ({
+    clinic: one(clinicsTable, {
+      fields: [appointmentsTable.clinicId],
+      references: [clinicsTable.id],
+    }),
+    patient: one(patientsTable, {
+      fields: [appointmentsTable.patientId],
+      references: [patientsTable.id],
+    }),
+    doctor: one(doctorsTable, {
+      fields: [appointmentsTable.doctorId],
+      references: [doctorsTable.id],
+    }),
   }),
-  patient: one(patientsTable, {
-    fields: [appointmentsTable.patientId],
-    references: [patientsTable.id],
-  }),
-  doctor: one(doctorsTable, {
-    fields: [appointmentsTable.doctorId],
-    references: [doctorsTable.id],
-  }),
-}));
+);
