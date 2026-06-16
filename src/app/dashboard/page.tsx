@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import { usersToClinicsTable } from "@/db/schema";
 
+
 const DashboardPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -28,6 +29,7 @@ const DashboardPage = async () => {
       <h1>Dashboard</h1>
       <h1>{session.user.name}</h1>
       <p>{session.user.email}</p>
+     
       <SignOutButton/>
     </div>
   );
